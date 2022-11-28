@@ -1,63 +1,87 @@
-var idProduit = new URL(window.location.href).searchParams.get('id');
+var idProduct = new URL(window.location.href).searchParams.get('id');
 
-fetch('http://localhost:3000/api/products/' + idProduit)
+fetch('http://localhost:3000/api/products/' + idProduct)
     .then(function (res) {
         if (res.ok) {
             return res.json();
         }
-    }).then(function (infoProduit) {
-        var img = document.createElement('img');
-        img.setAttribute('src', infoProduit.imageUrl);
-        img.setAttribute('alt', infoProduit.altTxt);
-        document.getElementsByClassName('item__img')[0].appendChild(img);
-
-        document.getElementsByTagName('title')[0].textContent = infoProduit.name;
-        document.getElementById('title').textContent = infoProduit.name;
-        document.getElementById('price').textContent = infoProduit.price;
-        document.getElementById('description').textContent = infoProduit.description;
-
-        for (let color of infoProduit.colors) {
-            var option = document.createElement('option');
-            option.setAttribute('value', color);
-            option.textContent = color;
-            document.getElementById('colors').appendChild(option);
-        }
-
-
+    }).then(function (infoProduct) {
+        displayProduct(infoProduct);
     }).catch(function (err) {
         console.log(err);
     });
 
 var colorSelect = 0;
-var quantite = 0;
+var quantity = 0;
 
 document.getElementById('colors').addEventListener('change', function () {
     colorSelect = this.value;
 });
 
 document.getElementById('quantity').addEventListener('change', function () {
-    quantite = Number(this.value);
-    console.log(quantite);
+    quantity = Number(this.value);
+    console.log(quantity);
 });
 
 document.getElementById('addToCart').addEventListener('click', function () {
-    if (quantite > 0 && quantite <= 100 && colorSelect != '') {
-        let preQuantite = quantite;
-        if (localStorage.getItem(idProduit + ' ' + colorSelect) !== null) {
-            let prePanier = JSON.parse(localStorage.getItem(idProduit + ' ' + colorSelect));
-            preQuantite += prePanier.quantite;
-            localStorage.removeItem(idProduit + ' ' + colorSelect);
-        }
-        let panier = {
-            idProduit: idProduit,
-            quantite: preQuantite,
-            colorSelect: colorSelect
-        }
-        let panierJSON = JSON.stringify(panier);
-        localStorage.setItem(idProduit + ' ' + colorSelect, panierJSON);
-    } else {
-        console.log('Erreur. Commande incorrecte.')
-    }
+    cartAddition();
 });
+
+function displayProduct(infoProduct) {
+    let img = document.createElement('img');
+    img.setAttribute('src', infoProduct.imageUrl);
+    img.setAttribute('alt', infoProduct.altTxt);
+    document.getElementsByClassName('item__img')[0].appendChild(img);
+
+    document.getElementsByTagName('title')[0].textContent = infoProduct.name;
+    document.getElementById('title').textContent = infoProduct.name;
+    document.getElementById('price').textContent = infoProduct.price;
+    document.getElementById('description').textContent = infoProduct.description;
+
+    for (let color of infoProduct.colors) {
+        let option = document.createElement('option');
+        option.setAttribute('value', color);
+        option.textContent = color;
+        document.getElementById('colors').appendChild(option);
+        console.log('couleur ajoutée : ' + color);
+    }
+}
+
+function cartAddition() {
+    if (!(quantity > 0 && quantity <= 100 && colorSelect != '')) {
+        alert('Erreur. Commande incorrecte. Quantité non comprise entre 0 et 100 et couleur non choisie');
+        return;
+    }
+    var cart = localStorage.getItem('cart');
+    var newProduct = {
+        idProduct: idProduct,
+        quantity: quantity,
+        colorSelect: colorSelect
+    };
+    if (cart === null) {
+        let cartList = new Array();
+        cartList.push(newProduct);
+        localStorage.setItem('cart', JSON.stringify(cartList));
+    } else {
+        console.log('panier existant');
+        let cartListArray = JSON.parse(cart);
+        let existingProduct = cartListArray.find(
+            element => element.idProduct == newProduct.idProduct && element.colorSelect == newProduct.colorSelect
+        );
+        console.log(existingProduct);
+        console.log(newProduct);
+        if (existingProduct != null) {
+            console.log('existant');
+            existingProduct.quantity += newProduct.quantity;
+        } else {
+            console.log('nouveau');
+            cartListArray.push(newProduct);
+        }
+        console.log(cartListArray);
+        localStorage.removeItem('cart');
+        localStorage.setItem('cart', JSON.stringify(cartListArray));
+    }
+    alert("produit ajouté");
+}
 
 console.log('fin');
