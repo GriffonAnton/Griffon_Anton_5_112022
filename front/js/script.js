@@ -11,7 +11,7 @@ fetch('http://localhost:3000/api/products')
         console.log(err);
     });
 
-function displayProduct(product) {
+function displayProduct(product) { //affiche un produit passée en paramètre
     var link = document.createElement('a');
     link.setAttribute('href', './product.html?id=' + product._id);
 

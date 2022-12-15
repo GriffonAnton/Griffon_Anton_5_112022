@@ -9,6 +9,8 @@ fetch('http://localhost:3000/api/products/' + idProduct)
         displayProduct(infoProduct);
     }).catch(function (err) {
         console.log(err);
+        alert("produit inexistant. retour à l'accueil");
+        window.location.href = "http://localhost:5500/front/html";
     });
 
 var colorSelect = 0;
@@ -27,7 +29,7 @@ document.getElementById('addToCart').addEventListener('click', function () {
     cartAddition();
 });
 
-function displayProduct(infoProduct) {
+function displayProduct(infoProduct) { // insère les informations passées en paramètre du produit dans la page
     let img = document.createElement('img');
     img.setAttribute('src', infoProduct.imageUrl);
     img.setAttribute('alt', infoProduct.altTxt);
@@ -47,7 +49,7 @@ function displayProduct(infoProduct) {
     }
 }
 
-function cartAddition() {
+function cartAddition() { // ajoute dans le localStorage le produit avec son ID, sa couleur et sa quantité, et augmente seulment la quantité si il y est déjà
     if (!(quantity > 0 && quantity <= 100 && colorSelect != '')) {
         alert('Erreur. Commande incorrecte. Quantité non comprise entre 0 et 100 et couleur non choisie');
         return;

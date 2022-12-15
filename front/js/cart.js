@@ -16,7 +16,7 @@ for (let cartProduct of cartArray) {
         });
 }
 
-function displayCartProduct(cartProductFullInfo, cartProduct) {
+function displayCartProduct(cartProductFullInfo, cartProduct) { //affiche les informations d'un produit avec les informations passées en paramètre
     totalPrice += cartProductFullInfo.price * cartProduct.quantity;
     totalQuantity += cartProduct.quantity;
 
@@ -105,7 +105,7 @@ function displayCartProduct(cartProductFullInfo, cartProduct) {
     document.getElementById('cart__items').appendChild(article);
 }
 
-function updateTotals() {
+function updateTotals() { //récupère les prix et quantités des articles, recalcule le prix et la quantité totale et met à jour leur affichage
 
     totalQuantity = 0;
     totalPrice = 0;
@@ -162,31 +162,31 @@ for (champ of Object.keys(contact)) {
 }
 
 
-document.getElementById('order').addEventListener('click', function (e) {
+document.getElementById('order').addEventListener('click', function (e) { //vérifie les informations du formulaire et affiche les éventuels messages d'erreur. Si tout est correct, envoie le formulaire à l'API et redirige à la page de confirmation avec le numéro de commande retourné en réponse
     e.preventDefault();
     let inputIsOk = true;
     for (champ of Object.keys(contact)) {
         console.log('nom du champ: ', champ);
         document.getElementById(champ + 'ErrorMsg').textContent = '';
     }
-    if (!contact.firstName.match(/^([A-Z]|[a-z]|\-)+$/)) {
-        document.getElementById('firstNameErrorMsg').textContent = 'Ce champ n\'est pas valide';
+    if (!contact.firstName.match(/^([A-Z]|[a-z]|[À-ÿ]|\-)+$/)) {
+        document.getElementById('firstNameErrorMsg').textContent = 'Ce champ n\'est pas valide. Ne peut contenir que des lettres ou des - .';
         inputIsOk = false;
     }
-    if (!contact.lastName.match(/^([A-Z]|[a-z]|\-|\')+$/)) {
-        document.getElementById('lastNameErrorMsg').textContent = 'Ce champ n\'est pas valide';
+    if (!contact.lastName.match(/^([A-Z]|[a-z]|[À-ÿ]|\-|\'|\s)+$/)) {
+        document.getElementById('lastNameErrorMsg').textContent = 'Ce champ n\'est pas valide. Ne peut contenir que des lettres, - ,  \' , ou espaces.';
         inputIsOk = false;
     }
-    if (!contact.address.match(/^([A-Z]|[a-z]|[0-9]|\s|\-|\')+$/)) {
-        document.getElementById('addressErrorMsg').textContent = 'Ce champ n\'est pas valide';
+    if (!contact.address.match(/^([A-Z]|[a-z]|[À-ÿ]|[0-9]|\s|\-|\')+$/)) {
+        document.getElementById('addressErrorMsg').textContent = 'Ce champ n\'est pas valide. Ne peut contenir que des lettres, chiffres, - ,  \' , ou espaces.';
         inputIsOk = false;
     }
     if (!contact.city.match(/^([A-Z]|[a-z]|\-|\')+$/)) {
-        document.getElementById('cityErrorMsg').textContent = 'Ce champ n\'est pas valide';
+        document.getElementById('cityErrorMsg').textContent = 'Ce champ n\'est pas valide. Ne peut contenir que des lettres, - ou \' .';
         inputIsOk = false;
     }
-    if (!contact.email.match(/^\S+@\S+$/)) {
-        document.getElementById('emailErrorMsg').textContent = 'Ce champ n\'est pas valide';
+    if (!contact.email.match(/^([a-z]|[0-9]|\_|\-|\.)+@{1}([a-z]|[0-9]|\_|\-|\.)+\.[a-z]{2,10}$/)) {
+        document.getElementById('emailErrorMsg').textContent = 'Ce champ n\'est pas valide. Doit être rempli au format suivant: example-nom.prénom@example_domaine-09.com';
         inputIsOk = false;
     }
     for (champ of Object.keys(contact)) {
@@ -234,7 +234,6 @@ document.getElementById('order').addEventListener('click', function (e) {
     }).then(function (res) {
         if (res.ok) {
             return res.json();
-            window.location.href = "http://localhost:5500/front/html/confirmation.html?orderId=" + res.json().orderId;
         }
     }).then(function (value) {
         window.location.href = "http://localhost:5500/front/html/confirmation.html?orderId=" + value.orderId;
